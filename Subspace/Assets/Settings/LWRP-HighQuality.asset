@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Name: LWRP-HighQuality
   m_EditorClassIdentifier: 
   kAssetVersion: 2
-  m_MaxPixelLights: 5
+  m_MaxPixelLights: 6
   m_SupportsVertexLight: 1
   m_RequireDepthTexture: 0
   m_RequireSoftParticles: 0
   m_SupportsHDR: 1
-  m_MSAA: 4
+  m_MSAA: 2
   m_RenderScale: 1
   m_ShadowType: 2
   m_ShadowAtlasResolution: 2048

@@ -10,10 +10,10 @@ public class PlayerController : NetworkBehaviour {
     Camera cam;
 
     [SerializeField]
-    float movementSpeed;
+    private float movementSpeed;
 
     [SerializeField]
-    float lookSpeed;
+    private float lookSpeed;
 
     [SerializeField]
     State state;
@@ -25,6 +25,7 @@ public class PlayerController : NetworkBehaviour {
     Color interactive;
 
     ShipController currentShip;
+    [SerializeField]
     bool onShip = false;
 
     Image dot;
@@ -53,8 +54,9 @@ public class PlayerController : NetworkBehaviour {
                 break;
             case State.flying:
                 Flying();
+                RoatateShip();
                 if (Input.GetKeyDown(KeyCode.E))
-                    ExitCockpit();
+                    ExitPilot();
                 break;
             default:
                 break;
@@ -62,7 +64,8 @@ public class PlayerController : NetworkBehaviour {
 
         if (onShip)
         {
-            OnShip();
+            SyncPlayerRotationWithShip();
+            SyncPlayerLocationWithShip();
         }
     }
 
@@ -106,20 +109,19 @@ public class PlayerController : NetworkBehaviour {
         // Does the ray intersect any objects excluding the player layer
         if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 2f))
         {
-            if(hit.collider.transform.parent.tag == "Interactive")
+            if (hit.collider.tag == "Interactive")
             {
-                Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
-                Debug.Log("Did Hit");
                 dot.color = interactive;
                 if (Input.GetKeyDown(KeyCode.E))
                 {
-                    EnterCockpit(hit.collider.transform.parent.gameObject);
+                    EnterPilot(hit.collider.transform.parent.gameObject);
                 }
             }
             else
             {
                 dot.color = nonInteractive;
             }
+            
         }
         else
         {
@@ -127,10 +129,29 @@ public class PlayerController : NetworkBehaviour {
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.tag == "Ship")
+        {
+            currentShip = other.GetComponent<ShipController>();
+            onShip = true;
+
+            lastShipPos = currentShip.transform.position;
+            lastYRotation = currentShip.transform.rotation.eulerAngles.y;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Ship")
+        {
+            onShip = false;
+        }
+    }
     #endregion
 
+    #region Flying
 
-    Vector3 lastShipPos;
     void Flying()
     {
         Vector3 translation = Vector3.zero;
@@ -138,10 +159,10 @@ public class PlayerController : NetworkBehaviour {
 
         if (Input.GetKey(KeyCode.W))
         {
-            translation.x = -1;
+            translation.x = 1;
         }else if (Input.GetKey(KeyCode.S))
         {
-            translation.x = 1;
+            translation.x = -1;
         }
 
         if (Input.GetKey(KeyCode.Space))
@@ -155,19 +176,36 @@ public class PlayerController : NetworkBehaviour {
 
         if (Input.GetKey(KeyCode.A))
         {
-            translation.z = 1;
+            translation.z = -1;
         }else if (Input.GetKey(KeyCode.D))
         {
-            translation.z = -1;
+            translation.z = 1;
         }
 
         rotation.x = Input.GetAxis("Mouse X");
         rotation.y = Input.GetAxis("Mouse Y");
 
-        currentShip.GetInput(translation, rotation);
+        currentShip.Cmd_GetInput(translation, rotation);
     }
 
-    void OnShip()
+    void RoatateShip()
+    {
+        print(Input.mousePosition);
+        currentShip.Cmd_GetRotation(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+    }
+
+    float lastYRotation;
+    void SyncPlayerRotationWithShip()
+    {
+        float curYRotation = currentShip.transform.rotation.eulerAngles.y;
+        float yAngle = currentShip.transform.rotation.eulerAngles.y - lastYRotation;
+        transform.RotateAround(currentShip.transform.position, Vector3.up, yAngle);
+
+        lastYRotation = curYRotation;
+    }
+
+    private Vector3 lastShipPos;
+    void SyncPlayerLocationWithShip()
     {
         Vector3 curShipPos = currentShip.transform.position;
         Vector3 moveDir = Vector3.zero;
@@ -178,28 +216,52 @@ public class PlayerController : NetworkBehaviour {
         lastShipPos = curShipPos;
     }
 
-    void EnterCockpit(GameObject ship)
+    #endregion
+    
+
+    void EnterPilot(GameObject ship)
     {
         currentShip = ship.GetComponent<ShipController>();
         if(currentShip.AssignPilot(this) != 0)
         {
-            currentShip = null;
             state = State.walking;
+            Debug.LogError("Couldn't Enter Ship");
         }
         else
         {
+            Cmd_Assignauthority(ship);
             state = State.flying;
-            lastShipPos = ship.transform.position;
-            onShip = true;
+            Quaternion rotation = new Quaternion(0, 0, 0, 0);
+            cam.transform.rotation = rotation;
         }
     }
 
-    void ExitCockpit()
+    [Command]
+    void Cmd_Assignauthority(GameObject ship)
+    {
+        bool success = ship.GetComponent<NetworkIdentity>().AssignClientAuthority(GetComponent<NetworkIdentity>().connectionToClient);
+        if (!success)
+        {
+            Debug.LogError("Coundn't Assign Authority");
+        }
+    }
+
+    [Command]
+    void Cmd_UnAssignauthority()
+    {
+        bool success = currentShip.GetComponent<NetworkIdentity>().RemoveClientAuthority(GetComponent<NetworkIdentity>().connectionToClient);
+        if (!success)
+        {
+            Debug.LogError("Coundn't Remove Authority");
+        }
+    }
+
+    void ExitPilot()
     {
         if(currentShip.UnAssignPilot(this) == 0)
         {
-            //currentShip = null;
             state = State.walking;
+            Cmd_UnAssignauthority();
         }
         else
         {
