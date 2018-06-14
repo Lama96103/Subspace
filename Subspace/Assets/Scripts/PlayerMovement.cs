@@ -41,10 +41,7 @@ namespace SubSpace.Player.Player
 
             Walking();
             Rotation();
-            CheckInteractive();
 
-            SyncPlayerRotationWithShip();
-            SyncPlayerLocationWithShip();
         }
 
         public void SyncPlayerToShip()

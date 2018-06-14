@@ -330,8 +330,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementSpeed: 10
   lookSpeed: 5
-  nonInteractive: {r: 1, g: 1, b: 1, a: 0}
-  interactive: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &114562285158993182
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -435,6 +433,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
+  nonInteractive: {r: 1, g: 1, b: 1, a: 0}
+  interactive: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &114851058461854344
 MonoBehaviour:
   m_ObjectHideFlags: 1
