@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 
-public class PlayerSetup : NetworkBehaviour
+public class PlayerSetup : Photon.PunBehaviour
 {
 
     [SerializeField]
@@ -11,7 +11,7 @@ public class PlayerSetup : NetworkBehaviour
 
     void Start()
     {
-        if (!isLocalPlayer)
+        if (!photonView.isMine)
         {
             for (int i = 0; i < componentsToDisable.Length; i++)
             {
@@ -25,7 +25,6 @@ public class PlayerSetup : NetworkBehaviour
             {
                 sceneCamera.gameObject.SetActive(false);
             }
-            GetComponentInChildren<Camera>().gameObject.name = "PlayerCamera " + GetComponent<NetworkIdentity>().netId;
         }
     }
 
@@ -39,7 +38,7 @@ public class PlayerSetup : NetworkBehaviour
 
     public void AfterDead()
     {
-        if (!isLocalPlayer)
+        if (!photonView.isMine)
         {
             for (int i = 0; i < componentsToDisable.Length; i++)
             {

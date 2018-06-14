@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class ShipController : NetworkBehaviour {
+public class ShipController : MonoBehaviour {
     
     PlayerController currentPilot;
 
@@ -27,15 +27,15 @@ public class ShipController : NetworkBehaviour {
 
 
 	}
+    
 
-    [Command]
     public void Cmd_GetInput(Vector3 translation, Vector2 rotation)
     {
         rig.AddForce(transform.forward * translation.x * movemnetSpeed);
         rig.AddForce(transform.right * translation.z * movemnetSpeed);
         rig.AddForce(transform.up * translation.y * movemnetSpeed * 9.81f);
     }
-    [Command]
+
     public void Cmd_GetRotation(float h, float v)
     {
         h *= rotationSpeed;
