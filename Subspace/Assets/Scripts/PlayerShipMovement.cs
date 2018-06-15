@@ -7,10 +7,11 @@ namespace SubSpace.Player.Ship
     public class PlayerShipMovement : MonoBehaviour
     {
 
-        public void UpdateMovement(ShipController ship)
+        public void UpdateMovement(ShipController ship, GameObject pilotSeat)
         {
             RoatateShip(ship);
             Flying(ship);
+            SyncPlayerShipLocationRotation(pilotSeat);
         }
 
 
@@ -58,6 +59,12 @@ namespace SubSpace.Player.Ship
         {
             //print(Input.mousePosition);
             ship.Cmd_GetRotation(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+        }
+
+        void SyncPlayerShipLocationRotation(GameObject pilotSeat)
+        {
+            this.transform.rotation = pilotSeat.transform.rotation;
+            this.transform.position = pilotSeat.transform.position;
         }
 
         #endregion

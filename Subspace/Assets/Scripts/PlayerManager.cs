@@ -12,6 +12,8 @@ namespace SubSpace.Player
 
         ShipController ship;
 
+        GameObject pilotSeat;
+
         [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
         public static GameObject LocalPlayerInstance;
 
@@ -75,14 +77,16 @@ namespace SubSpace.Player
                 return;
             }
 
-            movePlayer.SyncPlayerToShip();
+           
             switch (state)
             {
                 case State.walking:
                     movePlayer.UpdateMovement();
+                    movePlayer.SyncPlayerToShip();
+                    CheckInteractive();
                     break;
                 case State.flying:
-                    moveShip.UpdateMovement(ship);
+                    moveShip.UpdateMovement(ship, pilotSeat);
                     break;
                 case State.gunning:
                     break;
@@ -102,12 +106,12 @@ namespace SubSpace.Player
             // Does the ray intersect any objects excluding the player layer
             if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 2f))
             {
-                if (hit.collider.tag == "Interactive")
+                if (hit.collider.CompareTag("Interactive"))
                 {
                     dot.color = interactive;
                     if (Input.GetKeyDown(KeyCode.E) && hit.collider.transform.parent.CompareTag("Ship"))
                     {
-
+                        EnterShip(hit.collider.transform.parent.gameObject);
                     }
                 }
                 else
@@ -121,6 +125,16 @@ namespace SubSpace.Player
                 dot.color = nonInteractive;
             }
         }
+
+        void EnterShip(GameObject ship)
+        {
+            state = State.flying;
+            GetComponentInChildren<Camera>().transform.rotation = Quaternion.identity;
+            pilotSeat = GameObject.FindGameObjectWithTag("PilotSeat");
+            this.transform.rotation = pilotSeat.transform.rotation;
+            this.transform.position = pilotSeat.transform.position; 
+        }
+        
 
         enum State
         {
