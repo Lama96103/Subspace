@@ -65,10 +65,6 @@ namespace SubSpace.Player.Player
 
         void Walking()
         {
-            while (!character.isGrounded)
-            {
-                character.SimpleMove(-transform.up);
-            }
 
             if (Input.GetKey(KeyCode.W))
             {
