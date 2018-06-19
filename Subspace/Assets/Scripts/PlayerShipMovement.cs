@@ -51,14 +51,17 @@ namespace SubSpace.Player.Ship
 
             rotation.x = Input.GetAxis("Mouse X");
             rotation.y = Input.GetAxis("Mouse Y");
+            
 
-            ship.Cmd_GetInput(translation, rotation);
+            ship.GetMovement(translation, rotation);
         }
 
         void RoatateShip(ShipController ship)
         {
             //print(Input.mousePosition);
-            ship.Cmd_GetRotation(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+            //ship.GetRotation(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+            
+            ship.GetRotation(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
         }
 
         void SyncPlayerShipLocationRotation(GameObject pilotSeat)

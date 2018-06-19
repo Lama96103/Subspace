@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class ShipController : MonoBehaviour {
+public class ShipController : Photon.PunBehaviour
+{
     
     PlayerController currentPilot;
 
@@ -19,24 +20,25 @@ public class ShipController : MonoBehaviour {
         currentPilot = null;
         rig = GetComponent<Rigidbody>();
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update()
+    {
         if (currentPilot == null)
             return;
 
 
-	}
-    
+    }
 
-    public void Cmd_GetInput(Vector3 translation, Vector2 rotation)
+    public void GetMovement(Vector3 translation, Vector2 rotation)
     {
         rig.AddForce(transform.forward * translation.x * movemnetSpeed);
         rig.AddForce(transform.right * translation.z * movemnetSpeed);
-        rig.AddForce(transform.up * translation.y * movemnetSpeed * 9.81f);
+        rig.AddForce(transform.up * translation.y * movemnetSpeed);
     }
+    
 
-    public void Cmd_GetRotation(float h, float v)
+    public void GetRotation(float h, float v)
     {
         h *= rotationSpeed;
         v *= rotationSpeed;

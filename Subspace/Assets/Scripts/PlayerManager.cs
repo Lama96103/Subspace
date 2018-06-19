@@ -11,6 +11,7 @@ namespace SubSpace.Player
         Ship.PlayerShipMovement moveShip;
 
         ShipController ship;
+        PhotonView shipView;
 
         GameObject pilotSeat;
 
@@ -59,6 +60,7 @@ namespace SubSpace.Player
             movePlayer = GetComponent<Player.PlayerMovement>();
             moveShip = GetComponent<Ship.PlayerShipMovement>();
             ship = GameObject.FindGameObjectWithTag("Ship").GetComponent<ShipController>();
+            shipView = ship.GetComponent<PhotonView>();
 
             dot = GetComponentInChildren<Image>();
             dot.color = nonInteractive;
@@ -100,6 +102,11 @@ namespace SubSpace.Player
 
         }
 
+        void RequestShipOwnerShip()
+        {
+            shipView.RequestOwnership();
+        }
+
         void CheckInteractive()
         {
             RaycastHit hit;
@@ -132,7 +139,8 @@ namespace SubSpace.Player
             GetComponentInChildren<Camera>().transform.rotation = Quaternion.identity;
             pilotSeat = GameObject.FindGameObjectWithTag("PilotSeat");
             this.transform.rotation = pilotSeat.transform.rotation;
-            this.transform.position = pilotSeat.transform.position; 
+            this.transform.position = pilotSeat.transform.position;
+            shipView.TransferOwnership(PhotonNetwork.player.ID);
         }
         
 

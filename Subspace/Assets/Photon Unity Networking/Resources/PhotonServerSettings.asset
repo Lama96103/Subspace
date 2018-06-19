@@ -14,7 +14,7 @@ MonoBehaviour:
   AppID: 222c00d9-cc33-4775-8d95-76291f969cc9
   VoiceAppID: 
   ChatAppID: 
-  HostType: 1
+  HostType: 3
   PreferredRegion: 0
   EnabledRegions: -1
   Protocol: 0
@@ -42,4 +42,8 @@ MonoBehaviour:
   - RequestForPickupItems
   - RequestForPickupTimes
   - TaggedPlayer
+  - Cmd_GetInput
+  - Cmd_GetRotation
+  - GetMovement
+  - GetRotation
   DisableAutoOpenWizard: 1
