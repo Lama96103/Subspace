@@ -9,16 +9,19 @@ public class ShipController : Photon.PunBehaviour
     PlayerController currentPilot;
 
     [SerializeField]
-    float movemnetSpeed;
+    readonly float movemnetSpeed;
 
     [SerializeField]
-    float rotationSpeed;
+    readonly float rotationSpeed;
 
     Rigidbody rig;
+
+    Animator anim;
 	// Use this for initialization
 	void Start () {
         currentPilot = null;
         rig = GetComponent<Rigidbody>();
+        anim = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -71,6 +74,19 @@ public class ShipController : Photon.PunBehaviour
 
         return -1;
     }
-
-
+    
+    [PunRPC]
+    public void ActivateDoor(bool open)
+    {
+        if (open)
+        {
+            anim.ResetTrigger("OnDoorClose");
+            anim.SetTrigger("OnDoorOpen");
+        }
+        else
+        {
+            anim.ResetTrigger("OnDoorOpen");
+            anim.SetTrigger("OnDoorClose");
+        }
+    }
 }

@@ -89,6 +89,8 @@ namespace SubSpace.Player
                     break;
                 case State.flying:
                     moveShip.UpdateMovement(ship, pilotSeat);
+                    if (Input.GetKeyDown(KeyCode.E))
+                        ExitPilotSeat();
                     break;
                 case State.gunning:
                     break;
@@ -98,6 +100,17 @@ namespace SubSpace.Player
                     break;
                 default:
                     break;
+            }
+
+            if (Input.GetKeyDown(KeyCode.O))
+            {
+                shipView.RPC("ActivateDoor", PhotonTargets.All, true);
+                //ship.ActivateDoor(true);
+            }
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                shipView.RPC("ActivateDoor", PhotonTargets.All, false);
+                //ship.ActivateDoor(false);
             }
 
         }
@@ -118,7 +131,7 @@ namespace SubSpace.Player
                     dot.color = interactive;
                     if (Input.GetKeyDown(KeyCode.E) && hit.collider.transform.parent.CompareTag("Ship"))
                     {
-                        EnterShip(hit.collider.transform.parent.gameObject);
+                        EnterPilotSeat(hit.collider.transform.parent.gameObject);
                     }
                 }
                 else
@@ -133,14 +146,20 @@ namespace SubSpace.Player
             }
         }
 
-        void EnterShip(GameObject ship)
+        void EnterPilotSeat(GameObject ship)
         {
             state = State.flying;
-            GetComponentInChildren<Camera>().transform.rotation = Quaternion.identity;
             pilotSeat = GameObject.FindGameObjectWithTag("PilotSeat");
+            GetComponentInChildren<Camera>().transform.rotation = new Quaternion(0, 0, 0, 0);
             this.transform.rotation = pilotSeat.transform.rotation;
             this.transform.position = pilotSeat.transform.position;
             shipView.TransferOwnership(PhotonNetwork.player.ID);
+        }
+
+        void ExitPilotSeat()
+        {
+            state = State.walking;
+            GetComponentInChildren<Camera>().transform.rotation = new Quaternion(0, 0, 0, 0);
         }
         
 

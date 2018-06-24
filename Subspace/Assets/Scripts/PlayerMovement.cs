@@ -12,10 +12,13 @@ namespace SubSpace.Player.Player
         Camera cam;
 
         [SerializeField]
-        private float movementSpeed;
+        private readonly float movementSpeed = 10;
 
         [SerializeField]
-        private float lookSpeed;
+        private readonly float gravity = 2;
+
+        [SerializeField]
+        private readonly float lookSpeed= 5;
 
         ShipController currentShip;
         Vector3 localPosition;
@@ -38,6 +41,9 @@ namespace SubSpace.Player.Player
             {
                 FindShip();
             }
+            
+            if(!character.isGrounded)
+                character.Move(-transform.up * Time.deltaTime * gravity);
 
             Walking();
             Rotation();

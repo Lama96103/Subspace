@@ -23,7 +23,7 @@ GameObject:
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 7250588514170254948, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -54,4 +54,4 @@ MonoBehaviour:
   ship: {fileID: 1190975737474576, guid: 5b08ab1e12372e3428db4e46ee62f342, type: 2}
   playerPrefab: {fileID: 1597777104617548, guid: 61460bfd2a808654c86dae558ae5e3c2,
     type: 2}
-  spawnPoint: {x: 0, y: 0, z: 0}
+  spawnPoint: {x: 0, y: 0.2, z: 0}
