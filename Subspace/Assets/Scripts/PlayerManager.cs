@@ -105,12 +105,10 @@ namespace SubSpace.Player
             if (Input.GetKeyDown(KeyCode.O))
             {
                 shipView.RPC("ActivateDoor", PhotonTargets.All, true);
-                //ship.ActivateDoor(true);
             }
             if (Input.GetKeyDown(KeyCode.P))
             {
                 shipView.RPC("ActivateDoor", PhotonTargets.All, false);
-                //ship.ActivateDoor(false);
             }
 
         }

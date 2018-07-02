@@ -1,0 +1,175 @@
+fileFormatVersion: 2
+guid: 7c93d3870b4122946b489d665c910416
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: Armature
+    100002: Bone
+    100004: Bone_001
+    100006: Bone_002
+    100008: Bone_003
+    100010: Bone_004
+    100012: Bone_005
+    100014: Bone_006
+    100016: Bone_007
+    100018: Bone_008
+    100020: Bone_009
+    100022: Bone_010
+    100024: Bone_011
+    100026: Bone_012
+    100028: Bone_013
+    100030: Bone_014
+    100032: Plane
+    100034: //RootNode
+    100036: Bone_015
+    100038: Bone_016
+    100040: Player
+    100042: Body
+    100044: Head
+    100046: LeftDownArm
+    100048: LeftDownLeg
+    100050: LeftFoot
+    100052: LeftShoulder
+    100054: LeftUpArm
+    100056: LeftUpLeg
+    100058: RightDownArm
+    100060: RightDownLeg
+    100062: RightFoot
+    100064: RightShoulder
+    100066: RightUpArm
+    100068: RightUpLeg
+    100070: StartLeftLeg
+    100072: StartRightLeg
+    100074: LeftFoot_001
+    100076: RightFoot_001
+    100078: UpperBody
+    400000: Armature
+    400002: Bone
+    400004: Bone_001
+    400006: Bone_002
+    400008: Bone_003
+    400010: Bone_004
+    400012: Bone_005
+    400014: Bone_006
+    400016: Bone_007
+    400018: Bone_008
+    400020: Bone_009
+    400022: Bone_010
+    400024: Bone_011
+    400026: Bone_012
+    400028: Bone_013
+    400030: Bone_014
+    400032: Plane
+    400034: //RootNode
+    400036: Bone_015
+    400038: Bone_016
+    400040: Player
+    400042: Body
+    400044: Head
+    400046: LeftDownArm
+    400048: LeftDownLeg
+    400050: LeftFoot
+    400052: LeftShoulder
+    400054: LeftUpArm
+    400056: LeftUpLeg
+    400058: RightDownArm
+    400060: RightDownLeg
+    400062: RightFoot
+    400064: RightShoulder
+    400066: RightUpArm
+    400068: RightUpLeg
+    400070: StartLeftLeg
+    400072: StartRightLeg
+    400074: LeftFoot_001
+    400076: RightFoot_001
+    400078: UpperBody
+    2100000: unnamed
+    2300000: Plane
+    3300000: Plane
+    4300000: Plane
+    4300002: Player
+    7400000: Default Take
+    7400002: ArmatureAction_001
+    9500000: //RootNode
+    13700000: Player
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
