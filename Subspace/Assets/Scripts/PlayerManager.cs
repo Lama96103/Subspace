@@ -10,7 +10,7 @@ namespace SubSpace.Player
         Player.PlayerMovement movePlayer;
         Ship.PlayerShipMovement moveShip;
 
-        ShipController ship;
+        SubSpace.Ship.ShipController ship;
         PhotonView shipView;
 
         GameObject pilotSeat;
@@ -20,7 +20,7 @@ namespace SubSpace.Player
 
         [SerializeField]
         State state = State.walking;
-
+        CameraState cameraState = CameraState.fly;
 
 
         public string playerName = "PLAYER";
@@ -59,7 +59,7 @@ namespace SubSpace.Player
         {
             movePlayer = GetComponent<Player.PlayerMovement>();
             moveShip = GetComponent<Ship.PlayerShipMovement>();
-            ship = GameObject.FindGameObjectWithTag("Ship").GetComponent<ShipController>();
+            ship = GameObject.FindGameObjectWithTag("Ship").GetComponent<SubSpace.Ship.ShipController>();
             shipView = ship.GetComponent<PhotonView>();
 
             dot = GetComponentInChildren<Image>();
@@ -102,13 +102,23 @@ namespace SubSpace.Player
                     break;
             }
 
-            if (Input.GetKeyDown(KeyCode.O))
+            if(state == State.walking)
             {
-                shipView.RPC("ActivateDoor", PhotonTargets.All, true);
+                if (Input.GetKeyDown(KeyCode.O))
+                {
+                    shipView.RPC("ActivateDoor", PhotonTargets.All, true);
+                }
+                if (Input.GetKeyDown(KeyCode.P))
+                {
+                    shipView.RPC("ActivateDoor", PhotonTargets.All, false);
+                }
             }
-            if (Input.GetKeyDown(KeyCode.P))
+            
+
+            if(state == State.flying && Input.GetKeyDown(KeyCode.LeftAlt))
             {
-                shipView.RPC("ActivateDoor", PhotonTargets.All, false);
+                if (cameraState == CameraState.fly) cameraState = CameraState.ineract;
+                else cameraState = CameraState.fly;
             }
 
         }
@@ -152,18 +162,26 @@ namespace SubSpace.Player
             this.transform.rotation = pilotSeat.transform.rotation;
             this.transform.position = pilotSeat.transform.position;
             shipView.TransferOwnership(PhotonNetwork.player.ID);
+            ship.GetComponent<SubSpace.Ship.ShipController>().AssignPilot(this);
         }
 
         void ExitPilotSeat()
         {
             state = State.walking;
             GetComponentInChildren<Camera>().transform.rotation = new Quaternion(0, 0, 0, 0);
+            ship.GetComponent<SubSpace.Ship.ShipController>().UnAssignPilot(this);
+            movePlayer.FindShip();
         }
         
 
         enum State
         {
             walking, flying, gunning, interact, engineering
+        }
+
+        enum CameraState
+        {
+            fly, ineract
         }
 
     }

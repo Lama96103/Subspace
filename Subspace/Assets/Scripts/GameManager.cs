@@ -8,8 +8,6 @@ namespace SubSpace
     public class GameManager : Photon.PunBehaviour
     {
         [Tooltip("The prefab to use for representing the player")]
-        public GameObject ship;
-
         public GameObject playerPrefab;
 
         public Vector3 spawnPoint;
@@ -18,7 +16,7 @@ namespace SubSpace
         {
             if (PhotonNetwork.isMasterClient)
             {
-                //PhotonNetwork.Instantiate(this.ship.name, new Vector3(15f, 0.25f, 0f), Quaternion.identity, 0);
+                // Nothing at the Moment
             }
 
             if (playerPrefab == null)

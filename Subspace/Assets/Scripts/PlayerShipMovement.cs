@@ -7,7 +7,7 @@ namespace SubSpace.Player.Ship
     public class PlayerShipMovement : MonoBehaviour
     {
 
-        public void UpdateMovement(ShipController ship, GameObject pilotSeat)
+        public void UpdateMovement(SubSpace.Ship.ShipController ship, GameObject pilotSeat)
         {
             RoatateShip(ship);
             Flying(ship);
@@ -17,7 +17,7 @@ namespace SubSpace.Player.Ship
 
         #region Flying
 
-        void Flying(ShipController ship)
+        void Flying(SubSpace.Ship.ShipController ship)
         {
             Vector3 translation = Vector3.zero;
             Vector2 rotation = Vector2.zero;
@@ -49,14 +49,13 @@ namespace SubSpace.Player.Ship
                 translation.z = 1;
             }
 
-            rotation.x = Input.GetAxis("Mouse X");
-            rotation.y = Input.GetAxis("Mouse Y");
-            
-
-            ship.GetMovement(translation, rotation);
+            if (translation != Vector3.zero)
+                ship.GetMovement(translation);
+            else
+                ship.DampenVelocity();
         }
 
-        void RoatateShip(ShipController ship)
+        void RoatateShip(SubSpace.Ship.ShipController ship)
         {
             //print(Input.mousePosition);
             //ship.GetRotation(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));

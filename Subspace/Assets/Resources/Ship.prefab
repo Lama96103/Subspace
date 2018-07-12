@@ -39,7 +39,6 @@ GameObject:
   - component: {fileID: 114796697047600960}
   - component: {fileID: 95760080813283796}
   - component: {fileID: 114173933711658680}
-  - component: {fileID: 114547370321939528}
   - component: {fileID: 114550424216261902}
   - component: {fileID: 114063383355925130}
   m_Layer: 0
@@ -462,7 +461,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!64 &64381018591056436
 MeshCollider:
@@ -668,32 +667,6 @@ MonoBehaviour:
   instantiationId: -1
   currentMasterID: -1
   isRuntimeInstantiated: 0
---- !u!114 &114547370321939528
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1190975737474576}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowLayerWeightsInspector: 1
-  ShowParameterInspector: 1
-  m_SynchronizeParameters:
-  - Type: 9
-    SynchronizeType: 2
-    Name: OnDoorOpen
-  - Type: 9
-    SynchronizeType: 2
-    Name: OnDoorClose
-  - Type: 4
-    SynchronizeType: 1
-    Name: running
-  m_SynchronizeLayers:
-  - SynchronizeType: 0
-    LayerIndex: 0
 --- !u!114 &114550424216261902
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -782,8 +755,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76003824980f6f7448e54941b2c9c8aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movemnetSpeed: 25
-  rotationSpeed: 20
+  movemnetSpeed: 10
+  rotationSpeed: 10
+  dampening: 2
 --- !u!136 &136528468386865584
 CapsuleCollider:
   m_ObjectHideFlags: 1

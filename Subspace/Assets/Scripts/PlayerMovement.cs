@@ -20,7 +20,7 @@ namespace SubSpace.Player.Player
         [SerializeField]
         private readonly float lookSpeed= 5;
 
-        ShipController currentShip;
+        SubSpace.Ship.ShipController currentShip;
         Vector3 localPosition;
 
 
@@ -98,9 +98,9 @@ namespace SubSpace.Player.Player
 
         #region Utilities Functions
 
-        void FindShip()
+        public void FindShip()
         {
-            currentShip = GameObject.FindGameObjectWithTag("Ship").GetComponent<ShipController>();
+            currentShip = GameObject.FindGameObjectWithTag("Ship").GetComponent<SubSpace.Ship.ShipController>();
             lastShipPos = currentShip.transform.position;
             lastYRotation = currentShip.transform.rotation.y;
         }
@@ -108,6 +108,7 @@ namespace SubSpace.Player.Player
 
 
         private float lastYRotation;
+        
         void SyncPlayerRotationWithShip()
         {
             float curYRotation = currentShip.transform.rotation.eulerAngles.y;

@@ -3,90 +3,125 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class ShipController : Photon.PunBehaviour
+namespace SubSpace.Ship
 {
-    
-    PlayerController currentPilot;
-
-    [SerializeField]
-    readonly float movemnetSpeed;
-
-    [SerializeField]
-    readonly float rotationSpeed;
-
-    Rigidbody rig;
-
-    Animator anim;
-	// Use this for initialization
-	void Start () {
-        currentPilot = null;
-        rig = GetComponent<Rigidbody>();
-        anim = GetComponent<Animator>();
-    }
-
-    // Update is called once per frame
-    void Update()
+    public class ShipController : Photon.PunBehaviour
     {
-        if (currentPilot == null)
-            return;
 
+        SubSpace.Player.PlayerManager currentPilot;
 
-    }
+        [SerializeField]
+        private float movemnetSpeed;
 
-    public void GetMovement(Vector3 translation, Vector2 rotation)
-    {
-        rig.AddForce(transform.forward * translation.x * movemnetSpeed);
-        rig.AddForce(transform.right * translation.z * movemnetSpeed);
-        rig.AddForce(transform.up * translation.y * movemnetSpeed);
-    }
-    
+        [SerializeField]
+        private float rotationSpeed;
 
-    public void GetRotation(float h, float v)
-    {
-        h *= rotationSpeed;
-        v *= rotationSpeed;
+        [SerializeField]
+        private float dampening;
 
-        Vector3 eulerAngleVelocity = new Vector3(0, h * Time.deltaTime, 0);
-        transform.Rotate(eulerAngleVelocity);
+        Rigidbody rig;
 
-
-       // rig.AddTorque(eulerAngleVelocity);
-    }
-
-    public int AssignPilot(PlayerController player)
-    {
-        if (currentPilot == null)
-        {
-            currentPilot = player;
-            return 0;
-        }
-
-        return -1;
-    }
-
-    public int UnAssignPilot(PlayerController player)
-    {
-        if (currentPilot == player)
+        Animator anim;
+        // Use this for initialization
+        void Start()
         {
             currentPilot = null;
-            return 0;
+            rig = GetComponent<Rigidbody>();
+            anim = GetComponent<Animator>();
         }
 
-        return -1;
-    }
-    
-    [PunRPC]
-    public void ActivateDoor(bool open)
-    {
-        if (open)
+        // Update is called once per frame
+        void Update()
         {
-            anim.ResetTrigger("OnDoorClose");
-            anim.SetTrigger("OnDoorOpen");
+            if (currentPilot == null)
+            {
+                DampenVelocity();
+                return;
+            }
+
+
         }
-        else
+
+        public void GetMovement(Vector3 translation)
         {
-            anim.ResetTrigger("OnDoorOpen");
-            anim.SetTrigger("OnDoorClose");
+            rig.AddForce(transform.forward * translation.x * movemnetSpeed);
+            rig.AddForce(transform.right * translation.z * movemnetSpeed);
+            rig.AddForce(transform.up * translation.y * movemnetSpeed);
+        }
+
+        public void DampenVelocity()
+        {
+            if(rig.velocity.x > 0)
+            {
+                rig.AddForce(-Vector3.right * dampening);
+            }else if(rig.velocity.x < 0)
+            {
+                rig.AddForce(Vector3.right * dampening);
+            }
+
+            if (rig.velocity.y > 0)
+            {
+                rig.AddForce(-Vector3.up * dampening);
+            }
+            else if (rig.velocity.y < 0)
+            {
+                rig.AddForce(Vector3.up * dampening);
+            }
+
+            if (rig.velocity.z > 0)
+            {
+                rig.AddForce(-Vector3.forward * dampening);
+            }
+            else if (rig.velocity.z < 0)
+            {
+                rig.AddForce(Vector3.forward * dampening);
+            }
+        }
+
+        public void GetRotation(float h, float v)
+        {
+            h *= rotationSpeed;
+            v *= rotationSpeed;
+
+            Vector3 eulerAngleVelocity = new Vector3(0, h * Time.deltaTime, 0);
+            transform.Rotate(eulerAngleVelocity);
+        }
+
+        public int AssignPilot(SubSpace.Player.PlayerManager player)
+        {
+            if (currentPilot == null)
+            {
+                currentPilot = player;
+                return 0;
+            }
+
+            return -1;
+        }
+
+        public int UnAssignPilot(SubSpace.Player.PlayerManager player)
+        {
+            if (currentPilot == player)
+            {
+                currentPilot = null;
+                return 0;
+            }
+
+            return -1;
+        }
+
+        [PunRPC]
+        public void ActivateDoor(bool open)
+        {
+            if (open)
+            {
+                anim.ResetTrigger("OnDoorClose");
+                anim.SetTrigger("OnDoorOpen");
+            }
+            else
+            {
+                anim.ResetTrigger("OnDoorOpen");
+                anim.SetTrigger("OnDoorClose");
+            }
         }
     }
 }
