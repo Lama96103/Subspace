@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,13 +12,29 @@ namespace SubSpace.Networking
 
         public PhotonLogLevel _logLevel = PhotonLogLevel.Informational;
         public bool useOffline = true;
-        [Tooltip("The maximum number of players per room. When a room is full, it can't be joined by new players, and so new room will be created")]
-        public byte MaxPlayersPerRoom = 4;
+        public bool autoJoinLobby = true;
 
-        [Tooltip("The Ui Panel to let the user enter name, connect and play")]
-        public GameObject controlPanel;
+        #pragma warning disable IDE0044 // Add readonly modifier
+        public string _gameVersion = "1";
+         #pragma warning restore IDE0044 // Add readonly modifier
+        [Tooltip("The maximum number of players per room. When a room is full, it can't be joined by new players, and so new room will be created")]
+        public byte MaxPlayersPerRoom = 3;
+        
         [Tooltip("The UI Label to inform the user that the connection is in progress")]
         public GameObject progressLabel;
+
+        [Header("Lobby")]
+        public GameObject lobby;
+        public GameObject playerInfo;
+        public Button startGameBt;
+        [Header("Join Lobby")]
+        public GameObject joinLobby;
+        public GameObject createOwnLobbyName;
+        public InputField playerName;
+        public GameObject lobbyPrefab;
+        public GameObject allLobbys;
+
+        List<RoomInfo> roomInfoList = new List<RoomInfo>();
 
         public Text infoText;
 
@@ -25,7 +42,8 @@ namespace SubSpace.Networking
 
         #region Private Variables
 
-        string _gameVersion = "1";
+       
+
         bool isConnecting;
 
         #endregion
@@ -33,35 +51,97 @@ namespace SubSpace.Networking
         #region MonoBehaviour Callbacks
         private void Awake()
         {
-            PhotonNetwork.autoJoinLobby = false;
+            PhotonNetwork.autoJoinLobby = autoJoinLobby;
             PhotonNetwork.automaticallySyncScene = true;
             PhotonNetwork.logLevel = _logLevel;
             PhotonNetwork.offlineMode = useOffline;
+            
         }
 
         private void Start()
         {
             progressLabel.SetActive(false);
-            controlPanel.SetActive(true);
             PhotonNetwork.ConnectUsingSettings(_gameVersion);
+            playerName.text = PhotonNetwork.player.NickName;
+
+        }
+
+        private void FixedUpdate()
+        {
+            if(PhotonNetwork.room != null)
+            {
+                Debug.Log("Update Lobby");
+                Text info = playerInfo.GetComponent<Text>();
+                string infoText = null;
+                infoText += "Room: " + PhotonNetwork.room.Name +
+                            "\nPlayers: " + PhotonNetwork.room.PlayerCount + " / " + PhotonNetwork.room.MaxPlayers +
+                            "\nAll Player:\n";
+
+                int i = 1;
+                foreach (PhotonPlayer p in PhotonNetwork.playerList)
+                {
+                    infoText += "\nPlayer " + i + ": " + p.NickName;
+                    i++;
+                }
+
+                info.text = infoText;
+            }
         }
         #endregion
 
         #region Public Methods
 
-        public void Connect()
+        public void CreateRoom()
         {
-            isConnecting = true;
-            progressLabel.SetActive(true);
-            controlPanel.SetActive(false);
-            if (PhotonNetwork.connected)
+            string name = createOwnLobbyName.GetComponent<InputField>().text;
+            if (name.Length > 3)
             {
-                PhotonNetwork.JoinRandomRoom();
+                progressLabel.SetActive(true);
+                isConnecting = true;
+                PhotonNetwork.CreateRoom(name, new RoomOptions() { MaxPlayers = MaxPlayersPerRoom, IsVisible = true }, null);
+            }
+        }
+
+        public void OnPlayerNameChanged()
+        {
+            PhotonNetwork.player.NickName = playerName.text;
+            Debug.Log("Player NickName: " + PhotonNetwork.player.NickName);
+            playerName.text = PhotonNetwork.player.NickName;
+        }
+
+        public void StartGame()
+        {
+            
+            if (PhotonNetwork.isMasterClient)
+            {
+                PhotonNetwork.room.IsOpen = false;
+                PhotonNetwork.LoadLevel(1);
             }
             else
             {
-                PhotonNetwork.JoinRandomRoom();
+                Debug.LogWarning("You are not allowed to start the game");
             }
+                
+        }
+
+        #endregion
+
+        #region Callbacks
+
+        public void OnRoomJoin(object source, OnJoinLobbyArgs e)
+        {
+            if (PhotonNetwork.playerName.Length > 2)
+            {
+                progressLabel.SetActive(true);
+                RoomInfo room = e.Room;
+                isConnecting = true;
+                PhotonNetwork.JoinRoom(room.Name);
+            }
+            else
+            {
+                Debug.LogError("Please Set a User Name (min 3 Chars)");
+            }
+
         }
 
         #endregion
@@ -72,15 +152,12 @@ namespace SubSpace.Networking
         public override void OnConnectedToMaster()
         {
             Debug.Log("Launcher: OnConnectedToMaster() was called by PUN");
-            if (isConnecting)
-                PhotonNetwork.JoinRandomRoom();
         }
 
 
         public override void OnDisconnectedFromPhoton()
         {
             progressLabel.SetActive(false);
-            controlPanel.SetActive(true);
             Debug.LogWarning("Launcher: OnDisconnectedFromPhoton() was called by PUN");
         }
 
@@ -94,7 +171,11 @@ namespace SubSpace.Networking
         public override void OnJoinedRoom()
         {
             Debug.Log("Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
-            PhotonNetwork.LoadLevel(1);
+            progressLabel.SetActive(false);
+            joinLobby.SetActive(false);
+            lobby.SetActive(true);
+            if(!PhotonNetwork.isMasterClient)
+                startGameBt.interactable = false;
         }
 
         public override void OnLobbyStatisticsUpdate(){
@@ -104,6 +185,36 @@ namespace SubSpace.Networking
                         "Players: " + PhotonNetwork.countOfPlayers;
         }
 
+        
+
+        public override void OnReceivedRoomListUpdate()
+        {
+            Debug.Log("Show All Rooms");
+            int height = 0;
+            RoomInfo[] allRooms = PhotonNetwork.GetRoomList();
+            Debug.Log(allRooms.Length);
+            foreach (RoomInfo room in allRooms)
+            {
+                Debug.Log("Room Name: " + room.Name);
+                if (!roomInfoList.Contains(room))
+                {
+                    GameObject prefab = Instantiate(lobbyPrefab, allLobbys.transform);
+                    prefab.transform.Translate(0, height, 0);
+                    string status = "Error";
+                    if (room.IsOpen)
+                        status = " Status: Waiting";
+                    else
+                        status = " Status: Running";
+
+                    prefab.GetComponentInChildren<Text>().text = room.Name + ":  " + room.PlayerCount + " / " + room.MaxPlayers + status;
+                    prefab.GetComponent<Lobby>().room = room;
+                    prefab.GetComponent<Lobby>().OnJoinLobby += OnRoomJoin;
+                    roomInfoList.Add(room);
+
+                }
+                height -= 50;
+            }
+        }
         #endregion
 
 
