@@ -34,7 +34,7 @@ namespace SubSpace.Networking
         public GameObject lobbyPrefab;
         public GameObject allLobbys;
 
-        List<RoomInfo> roomInfoList = new List<RoomInfo>();
+        List<GameObject> roomList = new List<GameObject>();
 
         public Text infoText;
 
@@ -70,7 +70,6 @@ namespace SubSpace.Networking
         {
             if(PhotonNetwork.room != null)
             {
-                Debug.Log("Update Lobby");
                 Text info = playerInfo.GetComponent<Text>();
                 string infoText = null;
                 infoText += "Room: " + PhotonNetwork.room.Name +
@@ -94,7 +93,7 @@ namespace SubSpace.Networking
         public void CreateRoom()
         {
             string name = createOwnLobbyName.GetComponent<InputField>().text;
-            if (name.Length > 3)
+            if (name.Length > 2)
             {
                 progressLabel.SetActive(true);
                 isConnecting = true;
@@ -105,7 +104,6 @@ namespace SubSpace.Networking
         public void OnPlayerNameChanged()
         {
             PhotonNetwork.player.NickName = playerName.text;
-            Debug.Log("Player NickName: " + PhotonNetwork.player.NickName);
             playerName.text = PhotonNetwork.player.NickName;
         }
 
@@ -119,7 +117,7 @@ namespace SubSpace.Networking
             }
             else
             {
-                Debug.LogWarning("You are not allowed to start the game");
+                Debug.LogError("You are not allowed to start the game");
             }
                 
         }
@@ -189,30 +187,39 @@ namespace SubSpace.Networking
 
         public override void OnReceivedRoomListUpdate()
         {
-            Debug.Log("Show All Rooms");
             int height = 0;
             RoomInfo[] allRooms = PhotonNetwork.GetRoomList();
-            Debug.Log(allRooms.Length);
+
+            foreach (GameObject room in roomList)
+            {
+                Destroy(room);
+                }
+            
+            roomList.Clear();
+
             foreach (RoomInfo room in allRooms)
             {
-                Debug.Log("Room Name: " + room.Name);
-                if (!roomInfoList.Contains(room))
-                {
-                    GameObject prefab = Instantiate(lobbyPrefab, allLobbys.transform);
-                    prefab.transform.Translate(0, height, 0);
-                    string status = "Error";
-                    if (room.IsOpen)
-                        status = " Status: Waiting";
-                    else
-                        status = " Status: Running";
+                GameObject prefab = Instantiate(lobbyPrefab, allLobbys.transform);
+                prefab.transform.Translate(0, height, 0);
+                string status = "Error";
+                if (room.IsOpen)
+                    status = " Status: <i>Waiting</i>";
+                else
+                    status = " Status: <i>Running</i>";
 
-                    prefab.GetComponentInChildren<Text>().text = room.Name + ":  " + room.PlayerCount + " / " + room.MaxPlayers + status;
-                    prefab.GetComponent<Lobby>().room = room;
-                    prefab.GetComponent<Lobby>().OnJoinLobby += OnRoomJoin;
-                    roomInfoList.Add(room);
+                prefab.GetComponentInChildren<Text>().text = room.Name + ":  " + room.PlayerCount + " / " + room.MaxPlayers + status;
+                prefab.GetComponent<Lobby>().room = room;
+                prefab.GetComponent<Lobby>().OnJoinLobby += OnRoomJoin;
+                roomList.Add(prefab);
 
-                }
+                
                 height -= 50;
+
+                if(roomList.Count > 6)
+                {
+                    // TODO Solve that Problem
+                    //allLobbys.transform.rotation += new Quaternion(0, 50, 0, 0);
+                }
             }
         }
         #endregion
