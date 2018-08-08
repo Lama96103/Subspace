@@ -1,0 +1,11 @@
+Turret:
+Mirror 
+
+Cockpit:
+tasse hat die hälfte der verts wie der schreibtisch. -> größenverhähtnis
+
+bei mirror die verdeckten faces -> faces löschen
+
+Cockpit:
+verbindung zu bodenfläche vorne unsauber
+unterstefläche kann ein face werden
