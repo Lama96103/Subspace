@@ -21,7 +21,7 @@ MonoBehaviour:
   ServerAddress: 
   ServerPort: 5055
   VoiceServerPort: 5055
-  JoinLobby: 1
+  JoinLobby: 0
   EnableLobbyStatistics: 1
   PunLogging: 2
   NetworkLogging: 5
@@ -47,4 +47,5 @@ MonoBehaviour:
   - GetMovement
   - GetRotation
   - ActivateDoor
+  - Execute
   DisableAutoOpenWizard: 1

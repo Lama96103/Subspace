@@ -312,9 +312,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02caa2a3eca8e4a4bba0d4d2cd40293b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 10
-  gravity: 2
-  lookSpeed: 5
 --- !u!114 &114562285158993182
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -418,6 +415,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
+  cameraState: 0
   playerName: PLAYER
   nonInteractive: {r: 1, g: 1, b: 1, a: 0}
   interactive: {r: 1, g: 1, b: 1, a: 1}

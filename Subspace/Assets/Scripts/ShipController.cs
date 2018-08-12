@@ -10,15 +10,17 @@ namespace SubSpace.Ship
 
         SubSpace.Player.PlayerManager currentPilot;
 
+        #pragma warning disable IDE0044 // Add readonly modifier
         [SerializeField]
         private float movemnetSpeed;
+
 
         [SerializeField]
         private float rotationSpeed;
 
         [SerializeField]
         private float dampening;
-
+        #pragma warning restore IDE0044 // Add readonly modifier    
         Rigidbody rig;
 
         Animator anim;

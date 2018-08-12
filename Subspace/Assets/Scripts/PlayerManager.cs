@@ -7,29 +7,32 @@ namespace SubSpace.Player
 {
     public class PlayerManager : Photon.PunBehaviour, IPunObservable
     {
-        Player.PlayerMovement movePlayer;
-        Ship.PlayerShipMovement moveShip;
+        private Player.PlayerMovement movePlayer;
+        private Ship.PlayerShipMovement moveShip;
 
-        SubSpace.Ship.ShipController ship;
-        PhotonView shipView;
+        private Camera playerCamera;
 
-        GameObject pilotSeat;
+        private SubSpace.Ship.ShipController ship;
+        private PhotonView shipView;
+
+        private GameObject pilotSeat;
 
         [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
         public static GameObject LocalPlayerInstance;
 
         [SerializeField]
-        State state = State.walking;
-        CameraState cameraState = CameraState.fly;
+        private State state = State.walking;
+        [SerializeField]
+        private CameraState cameraState = CameraState.fly;
 
 
         public string playerName = "PLAYER";
 
         public Color nonInteractive;
         public Color interactive;
-        Image dot;
+        private Image dot;
 
-        int health = 100;
+        private int health = 100;
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
@@ -61,7 +64,7 @@ namespace SubSpace.Player
             moveShip = GetComponent<Ship.PlayerShipMovement>();
             ship = GameObject.FindGameObjectWithTag("Ship").GetComponent<SubSpace.Ship.ShipController>();
             shipView = ship.GetComponent<PhotonView>();
-
+            playerCamera = GetComponentInChildren<Camera>();
             dot = GetComponentInChildren<Image>();
             dot.color = nonInteractive;
 
@@ -113,7 +116,15 @@ namespace SubSpace.Player
                     shipView.RPC("ActivateDoor", PhotonTargets.All, false);
                 }
             }
-            
+
+            if (Input.GetKeyDown(KeyCode.M))
+            {
+                if( state == State.flying)
+                {
+                    ExitPilotSeat();
+                }
+                LeaveGame();
+            }
 
             if(state == State.flying && Input.GetKeyDown(KeyCode.LeftAlt))
             {
@@ -131,8 +142,8 @@ namespace SubSpace.Player
         void CheckInteractive()
         {
             RaycastHit hit;
-            // Does the ray intersect any objects excluding the player layer
-            if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 2f))
+            
+            if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, 2f))
             {
                 if (hit.collider.CompareTag("Interactive"))
                 {
@@ -140,6 +151,10 @@ namespace SubSpace.Player
                     if (Input.GetKeyDown(KeyCode.E) && hit.collider.transform.parent.CompareTag("Ship"))
                     {
                         EnterPilotSeat(hit.collider.transform.parent.gameObject);
+                    }
+                    if (Input.GetKeyDown(KeyCode.E) && hit.collider.transform.parent.CompareTag("Button"))
+                    {
+                        hit.collider.transform.parent.GetComponent<ButtonController>().Execute();
                     }
                 }
                 else
@@ -158,7 +173,7 @@ namespace SubSpace.Player
         {
             state = State.flying;
             pilotSeat = GameObject.FindGameObjectWithTag("PilotSeat");
-            GetComponentInChildren<Camera>().transform.rotation = new Quaternion(0, 0, 0, 0);
+            playerCamera.transform.rotation = new Quaternion(0, 0, 0, 0);
             this.transform.rotation = pilotSeat.transform.rotation;
             this.transform.position = pilotSeat.transform.position;
             shipView.TransferOwnership(PhotonNetwork.player.ID);
@@ -168,9 +183,14 @@ namespace SubSpace.Player
         void ExitPilotSeat()
         {
             state = State.walking;
-            GetComponentInChildren<Camera>().transform.rotation = new Quaternion(0, 0, 0, 0);
+            playerCamera.transform.rotation = new Quaternion(0, 0, 0, 0);
             ship.GetComponent<SubSpace.Ship.ShipController>().UnAssignPilot(this);
             movePlayer.FindShip();
+        }
+
+        public void LeaveGame()
+        {
+            GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().LeaveRoom(gameObject);
         }
         
 

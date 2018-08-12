@@ -34,6 +34,8 @@ namespace SubSpace.Networking
         public GameObject lobbyPrefab;
         public GameObject allLobbys;
 
+        public RoomOptions options;
+
         List<GameObject> roomList = new List<GameObject>();
 
         public Text infoText;
@@ -44,7 +46,7 @@ namespace SubSpace.Networking
 
        
 
-        bool isConnecting;
+        public bool isConnecting;
 
         #endregion
 
@@ -62,6 +64,7 @@ namespace SubSpace.Networking
         {
             progressLabel.SetActive(false);
             PhotonNetwork.ConnectUsingSettings(_gameVersion);
+            isConnecting = true;
             playerName.text = PhotonNetwork.player.NickName;
 
         }
@@ -93,7 +96,7 @@ namespace SubSpace.Networking
         public void CreateRoom()
         {
             string name = createOwnLobbyName.GetComponent<InputField>().text;
-            if (name.Length > 2)
+            if (name.Length > 2 && isConnecting == false)
             {
                 progressLabel.SetActive(true);
                 isConnecting = true;
@@ -150,20 +153,21 @@ namespace SubSpace.Networking
         public override void OnConnectedToMaster()
         {
             Debug.Log("Launcher: OnConnectedToMaster() was called by PUN");
+            isConnecting = false;
         }
 
 
         public override void OnDisconnectedFromPhoton()
         {
             progressLabel.SetActive(false);
+            isConnecting = false;
             Debug.LogWarning("Launcher: OnDisconnectedFromPhoton() was called by PUN");
         }
 
         public override void OnPhotonRandomJoinFailed(object[] codeAndMsg)
         {
-            Debug.Log("Launcher:OnPhotonRandomJoinFailed() was called by PUN. No random room available, so we create one.\nCalling: PhotonNetwork.CreateRoom(null, new RoomOptions() {maxPlayers = 4}, null);");
-
-            PhotonNetwork.CreateRoom(null, new RoomOptions() { MaxPlayers = MaxPlayersPerRoom }, null);
+            Debug.LogError("Launcher:OnPhotonRandomJoinFailed() was called by PUN. No random room available, so we create one.\nCalling: PhotonNetwork.CreateRoom(null, new RoomOptions() {maxPlayers = 4}, null);");
+            isConnecting = false;
         }
 
         public override void OnJoinedRoom()
@@ -172,18 +176,25 @@ namespace SubSpace.Networking
             progressLabel.SetActive(false);
             joinLobby.SetActive(false);
             lobby.SetActive(true);
+            isConnecting = false;
             if(!PhotonNetwork.isMasterClient)
                 startGameBt.interactable = false;
         }
 
         public override void OnLobbyStatisticsUpdate(){
+            Debug.Log("Update");
             infoText.text = "Rooms " + PhotonNetwork.countOfRooms + "\n" +
                         "Players not in Room: " + PhotonNetwork.countOfPlayersOnMaster + "\n" +
                         "Players in Room: " + PhotonNetwork.countOfPlayersInRooms + "\n" +
                         "Players: " + PhotonNetwork.countOfPlayers;
         }
 
-        
+        public override void OnConnectedToPhoton()
+        {
+            base.OnConnectedToPhoton();
+            isConnecting = false;
+        }
+
 
         public override void OnReceivedRoomListUpdate()
         {

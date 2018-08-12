@@ -12,6 +12,8 @@ namespace SubSpace
 
         public Vector3 spawnPoint;
 
+        bool enableSpawning = false;
+
         private void Start()
         {
             if (PhotonNetwork.isMasterClient)
@@ -27,16 +29,44 @@ namespace SubSpace
             {
                 if (SubSpace.Player.PlayerManager.LocalPlayerInstance == null)
                 {
+                    enableSpawning = true;
                     if (!PhotonNetwork.connected || (PhotonNetwork.InstantiateInRoomOnly && !PhotonNetwork.inRoom))
                     {
-                        OnLeftRoom();
-                        Debug.Log("Player wasn't connected");
-                        return;
+                        StartTestingLobby();
+                        Debug.LogWarning("Player wasn't connected. You are in a Testing Room");
                     }
-                    PhotonNetwork.Instantiate(this.playerPrefab.name, spawnPoint, Quaternion.identity, 0);
-                   
+                    else
+                    {
+                        PhotonNetwork.Instantiate(this.playerPrefab.name, spawnPoint, Quaternion.identity, 0);
+                    }
                 }
             }
+        }
+
+        private void StartTestingLobby()
+        {
+            PhotonNetwork.autoJoinLobby = false;
+            PhotonNetwork.automaticallySyncScene = true;
+            PhotonNetwork.logLevel = PhotonLogLevel.Full;
+            PhotonNetwork.offlineMode = false;
+            PhotonNetwork.ConnectUsingSettings("testing");
+            PhotonNetwork.player.NickName = "TestingPlayer";
+
+        }
+
+        #region Photon Messages
+
+        public override void OnConnectedToMaster()
+        {
+            PhotonNetwork.CreateRoom("Testing", new RoomOptions() { MaxPlayers = 3, IsVisible = true }, null);
+            
+        }
+
+        public override void OnJoinedRoom()
+        {
+            Debug.Log("GameManager: OnJoinedRoom() called by PUN. Now this client is in a room.");
+            if(SubSpace.Player.PlayerManager.LocalPlayerInstance == null && enableSpawning)
+                PhotonNetwork.Instantiate(this.playerPrefab.name, spawnPoint, Quaternion.identity, 0);
         }
 
 
@@ -45,8 +75,9 @@ namespace SubSpace
             SceneManager.LoadScene(0);
         }
 
-        public void LeaveRoom()
+        public void LeaveRoom(GameObject player)
         {
+            Destroy(player);
             PhotonNetwork.LeaveRoom();
         }
 
@@ -57,12 +88,8 @@ namespace SubSpace
                 Debug.LogError("PhotonNetwork : Trying to Load a level but we are not the master Client");
             }
             Debug.Log("PhotonNetwork : Loading Level : " + PhotonNetwork.room.PlayerCount);
-            //PhotonNetwork.LoadLevel(1);
         }
-
-        #region Photon Messages
-
-
+        
         public override void OnPhotonPlayerConnected(PhotonPlayer other)
         {
             Debug.Log("OnPhotonPlayerConnected() " + other.NickName); // not seen if you're the player connecting
@@ -71,8 +98,6 @@ namespace SubSpace
             if (PhotonNetwork.isMasterClient)
             {
                 Debug.Log("OnPhotonPlayerConnected isMasterClient " + PhotonNetwork.isMasterClient); // called before OnPhotonPlayerDisconnected
-
-
                 LoadArena();
             }
         }
