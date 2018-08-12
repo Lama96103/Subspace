@@ -34,6 +34,8 @@ namespace SubSpace.Player
 
         private int health = 100;
 
+        TMPro.TextMeshPro textMesh;
+
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
             if (stream.isWriting)
@@ -68,10 +70,12 @@ namespace SubSpace.Player
             dot = GetComponentInChildren<Image>();
             dot.color = nonInteractive;
 
+            textMesh = GetComponentInChildren<TMPro.TextMeshPro>();
 
+            gameObject.name = "Player_" + PhotonNetwork.playerName;
+            playerName = "Player_" + PhotonNetwork.playerName;
 
-            gameObject.name = "Player " + PhotonNetwork.playerName;
-            playerName = "Player " + PhotonNetwork.playerName;
+            textMesh.text = PhotonNetwork.playerName;
         }
 
         // Update is called once per frame
